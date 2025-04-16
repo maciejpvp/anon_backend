@@ -13,6 +13,7 @@ import { app, server } from "./lib/socket";
 import { connectDB } from "./lib/db";
 
 import authRoutes from "./routes/auth.route";
+import messageRoutes from "./routes/message.route";
 import { errorHandler } from "./middlewares/errorHandler";
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/message", messageRoutes);
 
 app.use(errorHandler);
 

@@ -16,6 +16,12 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
     req.user = { userId: decoded.userId };
     next();
   } catch (err) {
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 0,
+      sameSite: "lax",
+    });
     return next(new ApiError("Invalid or expired token", 401));
   }
 };

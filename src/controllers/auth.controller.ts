@@ -39,3 +39,16 @@ export const checkAuth = catchAsync(async (req, res) => {
     data: user,
   });
 });
+
+export const logout = catchAsync(async (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 0,
+    sameSite: "lax",
+  });
+  res.status(200).json({
+    status: true,
+    message: "logged out",
+  });
+});
