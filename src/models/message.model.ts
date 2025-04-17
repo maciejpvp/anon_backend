@@ -67,6 +67,8 @@ messageSchema.statics.sendMessage = async function (
   });
 };
 
+messageSchema.statics.getFriendList = async function () {};
+
 const Message = mongoose.model<IMessageDocument, IMessageModel>(
   "Message",
   messageSchema

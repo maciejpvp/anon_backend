@@ -37,6 +37,7 @@ interface IUserModel extends Model<IUserDocument> {
     };
     token: string;
   }>;
+  isUsernameAvailable(username: string): Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema<IUserDocument>(
@@ -118,6 +119,14 @@ userSchema.statics.login = async function (username: string, password: string) {
     },
     token,
   };
+};
+
+userSchema.statics.isUsernameAvailable = async function (
+  username: string
+): Promise<boolean> {
+  const user = await this.findOne({ username });
+
+  return user ? false : true;
 };
 
 const User = mongoose.model<IUserDocument, IUserModel>("User", userSchema);

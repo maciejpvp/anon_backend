@@ -40,6 +40,14 @@ export const checkAuth = catchAsync(async (req, res) => {
   });
 });
 
+export const isUsernameAvailable = catchAsync(async (req, res) => {
+  const { username } = req.body;
+  const isUsernameAvailable = await User.isUsernameAvailable(username);
+  res.status(200).json({
+    isUsernameAvailable,
+  });
+});
+
 export const logout = catchAsync(async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,

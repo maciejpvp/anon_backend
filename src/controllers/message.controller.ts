@@ -24,8 +24,11 @@ export const getMessages = catchAsync(async (req, res) => {
 });
 
 export const getFriendList = catchAsync(async (req, res) => {
+  //TODO: use correct statics function
   const userId = req.user?.userId || "";
-  const users = await User.find({ _id: { $ne: userId } });
+  const users = await User.find({ _id: { $ne: userId } }).select(
+    "_id username profilePic publicKey"
+  );
   res.status(200).json({
     success: true,
     data: users,
