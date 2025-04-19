@@ -1,3 +1,4 @@
+import { getReceiverSocketIds, io } from "../lib/socket";
 import Message from "../models/message.model";
 import User from "../models/user.model";
 import { catchAsync } from "../utils/catchAsync";
@@ -7,6 +8,11 @@ export const sendMessage = catchAsync(async (req, res) => {
   const { message } = req.body;
   const { friendId } = req.params;
   const newMessage = await Message.sendMessage(userId, friendId, message);
+  const ids = getReceiverSocketIds(friendId);
+  if (ids) {
+    io.to(ids).emit("new-message", newMessage);
+  }
+
   res.status(200).json({
     success: true,
     data: newMessage,
@@ -17,7 +23,6 @@ export const getMessages = catchAsync(async (req, res) => {
   const userId = req.user?.userId || "";
   const { friendId } = req.params;
   const messages = await Message.getMessagesBetweenUsers(userId, friendId);
-  console.log(messages);
   res.status(200).json({
     messages,
   });

@@ -1,3 +1,4 @@
+import { string } from "joi";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface IMessage {
@@ -52,7 +53,7 @@ messageSchema.statics.getMessagesBetweenUsers = function (
       { senderId: user1, receiverId: user2 },
       { senderId: user2, receiverId: user1 },
     ],
-  }).exec();
+  });
 };
 
 messageSchema.statics.sendMessage = async function (
