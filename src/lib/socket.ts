@@ -32,7 +32,7 @@ function removeUserSocket(userId: string, socketId: string) {
   }
 }
 
-export function getReceiverSocketIds(userId: string): string[] | undefined {
+export function getUserSocketIds(userId: string): string[] | undefined {
   return userSocketMap[userId] ? Array.from(userSocketMap[userId]) : undefined;
 }
 

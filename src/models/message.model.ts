@@ -13,7 +13,9 @@ interface IMessageDocument extends IMessage, Document {}
 interface IMessageModel extends Model<IMessageDocument> {
   getMessagesBetweenUsers(
     user1: string,
-    user2: string
+    user2: string,
+    beforeDate?: Date,
+    limit?: number
   ): Promise<IMessageDocument[]>;
   sendMessage(
     userId: string,
@@ -46,14 +48,24 @@ const messageSchema = new Schema<IMessageDocument>(
 
 messageSchema.statics.getMessagesBetweenUsers = function (
   user1: string,
-  user2: string
+  user2: string,
+  beforeDate?: Date,
+  limit = 30
 ) {
-  return this.find({
+  const filter: any = {
     $or: [
       { senderId: user1, receiverId: user2 },
       { senderId: user2, receiverId: user1 },
     ],
-  });
+  };
+
+  if (beforeDate) {
+    filter.createdAt = { $lt: beforeDate };
+  }
+
+  return this.find(filter)
+    .sort({ createdAt: -1 }) // Newest first
+    .limit(limit);
 };
 
 messageSchema.statics.sendMessage = async function (
