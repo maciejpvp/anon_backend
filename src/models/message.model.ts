@@ -1,10 +1,10 @@
-import { string } from "joi";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface IMessage {
   senderId: mongoose.Types.ObjectId;
   receiverId: mongoose.Types.ObjectId;
   text?: string;
+  isEdited: boolean;
   image?: string;
 }
 
@@ -15,13 +15,15 @@ interface IMessageModel extends Model<IMessageDocument> {
     user1: string,
     user2: string,
     beforeDate?: Date,
-    limit?: number
+    limit?: number,
   ): Promise<IMessageDocument[]>;
   sendMessage(
     userId: string,
     friendId: string,
-    message: string
+    message: string,
   ): Promise<IMessageDocument>;
+  editMessage(messageId: string, newText: string): Promise<IMessage>;
+  deleteMessage(messageId: string): Promise<boolean>;
 }
 
 const messageSchema = new Schema<IMessageDocument>(
@@ -39,18 +41,22 @@ const messageSchema = new Schema<IMessageDocument>(
     text: {
       type: String,
     },
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
     image: {
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 messageSchema.statics.getMessagesBetweenUsers = function (
   user1: string,
   user2: string,
   beforeDate?: Date,
-  limit = 30
+  limit = 30,
 ) {
   const filter: any = {
     $or: [
@@ -71,7 +77,7 @@ messageSchema.statics.getMessagesBetweenUsers = function (
 messageSchema.statics.sendMessage = async function (
   userId: string,
   friendId: string,
-  message: string
+  message: string,
 ) {
   return this.create({
     senderId: userId,
@@ -80,11 +86,29 @@ messageSchema.statics.sendMessage = async function (
   });
 };
 
+messageSchema.statics.editMessage = async function (
+  messageId: string,
+  newText: string,
+) {
+  const updated = await this.findByIdAndUpdate(
+    messageId,
+    { text: newText, isEdited: true },
+    { new: true },
+  );
+  return updated;
+};
+
+messageSchema.statics.deleteMessage = async function (messageId) {
+  const deletedMessage = await this.findByIdAndDelete(messageId);
+  const isDeleted = !!deletedMessage;
+  return isDeleted;
+};
+
 messageSchema.statics.getFriendList = async function () {};
 
 const Message = mongoose.model<IMessageDocument, IMessageModel>(
   "Message",
-  messageSchema
+  messageSchema,
 );
 
 export default Message;

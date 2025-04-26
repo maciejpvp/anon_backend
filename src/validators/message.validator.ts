@@ -7,3 +7,7 @@ export const messageSchema = Joi.object({
 export const getMessagesSchema = Joi.object({
   userId: Joi.string().min(3).max(30).required(),
 });
+
+export const editMessageSchema = Joi.object({
+  newText: Joi.string().min(1).max(3000).required(),
+});
